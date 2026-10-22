@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>$BOO Phantom Realm</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0c18;color:#f4f5ff;font-family:system-ui,sans-serif}
+main{max-width:760px;margin:auto;padding:20px}
+header{text-align:center;padding:14px}
+h1{margin:4px;color:#79dcff;letter-spacing:2px}
+.sub{color:#9ba5c7;font-size:13px}
+.arena{display:flex;justify-content:space-around;align-items:center;gap:10px;min-height:270px;background:radial-gradient(ellipse,#262653,#101222 72%);border:1px solid #393d69;border-radius:20px;padding:18px}
+.fighter{text-align:center;width:44%}
+.ghost{position:relative;margin:10px auto 18px;width:105px;height:115px;border:3px solid #d6f8ff;border-radius:52% 52% 38% 38%;background:linear-gradient(135deg,#83eaff,#3686ff);box-shadow:0 0 28px #4aaeff66;clip-path:polygon(0 100%,0 36%,8% 15%,25% 3%,50% 0,75% 3%,92% 15%,100% 36%,100% 100%,80% 91%,63% 100%,45% 91%,25% 100%)}
+.ghost:before{content:"";position:absolute;left:25px;top:36px;width:10px;height:16px;background:#11162e;border-radius:50%;box-shadow:35px 0 #11162e}
+.ghost:after{content:"";position:absolute;left:35px;top:61px;width:23px;height:12px;border-bottom:4px solid #142047;border-radius:50%}
+.enemy{filter:hue-rotate(115deg);background:linear-gradient(135deg,#ff9ae8,#9b43ff);box-shadow:0 0 28px #be5bff66}
+.hp{height:10px;background:#34364e;border-radius:20px;overflow:hidden;margin:8px 0}
+.hp span{display:block;height:100%;width:100%;background:#43e4a0;transition:width .25s}
+.enemyhp span{background:#ff6c8c}
+.name{font-weight:800}.stats{font-size:12px;color:#b9c1e1}
+.vs{color:#ffda8a;font-weight:900}
+.panel{margin-top:16px;padding:16px;background:#141629;border:1px solid #303454;border-radius:16px}
+.status{text-align:center;min-height:25px;color:#bcefff}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+button{padding:13px 8px;border-radius:12px;border:1px solid #4c527d;background:#252a49;color:white;font-weight:750;font-size:14px;cursor:pointer}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.4}
+#log{font-size:13px;color:#bfc6e4;line-height:1.7;min-height:48px}
+.reset{width:100%;margin-top:10px;background:#101222}
+footer{text-align:center;color:#707b9e;font-size:11px;padding:18px}
+@media(max-width:400px){main{padding:10px}.arena{padding:10px}.ghost{width:82px;height:95px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="sub">ORIGINAL $BOO GAME PROJECT</div>
+  <h1>👻 PHANTOM REALM</h1>
+  <div class="sub">Enter the realm. Fight your way through.</div>
+</header>
+
+<section class="arena">
+  <div class="fighter">
+    <div class="ghost" aria-label="Blue Boo ghost mascot"></div>
+    <div class="name">$BOO</div>
+    <div class="stats">PHANTOM • LVL 1</div>
+    <div class="hp"><span id="playerbar"></span></div>
+    <div class="stats">HP <b id="playerhp">100</b>/100</div>
+  </div>
+  <div class="vs">VS</div>
+  <div class="fighter">
+    <div class="ghost enemy" aria-label="Purple phantom enemy"></div>
+    <div class="name">VOID WRAITH</div>
+    <div class="stats">ENEMY • LVL 1</div>
+    <div class="hp enemyhp"><span id="enemybar"></span></div>
+    <div class="stats">HP <b id="enemyhp">100</b>/100</div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="status" id="status">Your turn. Choose an action.</div>
+  <div class="actions">
+    <button id="attack" onclick="act('attack')">⚔️ Phantom Strike</button>
+    <button id="shield" onclick="act('shield')">🛡️ Ghost Shield</button>
+    <button id="heal" onclick="act('heal')">💚 Spirit Heal</button>
+    <button id="special" onclick="act('special')">⚡ Boo Blast</button>
+  </div>
+  <div class="sub" style="margin-top:14px">BATTLE LOG</div>
+  <div id="log">The Void Wraith appears. $BOO, prepare for battle!</div>
+  <button class="reset" onclick="resetGame()">↻ Restart Battle</button>
+</section>
+<footer>PHANTOM REALM • PROTOTYPE 0.1 • ORIGINAL GAME IN DEVELOPMENT</footer>
+</main>
+
+<script>
+let p=100,e=100,guard=0,turn=0,over=false;
+const $=id=>document.getElementById(id);
+function say(s){$('status').textContent=s;$('log').textContent=s}
+function draw(){
+ $('playerhp').textContent=p;$('enemyhp').textContent=e;
+ $('playerbar').style.width=p+'%';$('enemybar').style.width=e+'%';
+ $('attack').disabled=$('shield').disabled=$('heal').disabled=$('special').disabled=over;
+}
+function act(move){
+ if(over)return;
+ let msg='';
+ if(move==='attack'){let d=14+Math.floor(Math.random()*12);e=Math.max(0,e-d);msg='$BOO strikes for '+d+' damage!'}
+ if(move==='special'){let d=23+Math.floor(Math.random()*16);e=Math.max(0,e-d);msg='BOO BLAST hits for '+d+' damage!'}
+ if(move==='shield'){guard=18;msg='Ghost Shield absorbs up to 18 damage.'}
+ if(move==='heal'){let h=Math.min(20,100-p);p+=h;msg='Spirit Heal restores '+h+' HP.'}
+ if(e<=0){over=true;msg+=' The Void Wraith is defeated. Victory!';say(msg);draw();return}
+ if(move!=='shield')guard=0;
+ let d=10+Math.floor(Math.random()*10),blocked=Math.min(guard,d);
+ p=Math.max(0,p-(d-blocked));guard=0;
+ msg+=' Enemy attacks for '+d+' damage'+(blocked?' ('+blocked+' blocked)':'')+'.';
+ if(p<=0){over=true;msg+=' $BOO has fallen. Try again!'}
+ say(msg);draw();
+}
+function resetGame(){p=100;e=100;guard=0;turn=0;over=false;say('Your turn. Choose an action.');draw()}
+draw();
+</script>
+</body>
+</html>
